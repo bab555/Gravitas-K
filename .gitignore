@@ -1,0 +1,43 @@
+# Environments
+.env
+.venv
+venv/
+env/
+ENV/
+
+# Python Caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large Model Files & Data
+# Important: Add your local model directories here
+/Qwen3-8B/
+
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.ckpt
+*.onnx
+*.h5
+*.hd5
+*.hdf5
+
+# Datasets
+/data/
+/datasets/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
