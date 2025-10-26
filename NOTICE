@@ -1,0 +1,98 @@
+Gravitas-K
+Copyright (c) 2025 Gravitas-K Project Contributors
+
+This product includes software developed by the Gravitas-K Project.
+
+================================================================================
+
+THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
+================================================================================
+
+This project incorporates components from the projects listed below. The original
+copyright notices and the licenses under which we received such components are
+set forth below.
+
+--------------------------------------------------------------------------------
+1. Qwen3-8B
+--------------------------------------------------------------------------------
+
+Copyright 2025 Alibaba Cloud
+Licensed under the Apache License, Version 2.0
+
+Source: https://github.com/QwenLM/Qwen3
+License: Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
+
+Qwen3 is used as the base model for Gravitas-K. We have made modifications to
+the decoder layers to implement our Cognitive Core Blocks (CCB) architecture.
+
+--------------------------------------------------------------------------------
+2. Transformers (Hugging Face)
+--------------------------------------------------------------------------------
+
+Copyright 2018- The Hugging Face team
+Licensed under the Apache License, Version 2.0
+
+Source: https://github.com/huggingface/transformers
+License: Apache License 2.0
+
+Used for model loading, tokenization, and training utilities.
+
+--------------------------------------------------------------------------------
+3. PyTorch
+--------------------------------------------------------------------------------
+
+Copyright (c) 2016-2025 Facebook, Inc (Meta Platforms)
+Licensed under the BSD-3-Clause License
+
+Source: https://github.com/pytorch/pytorch
+License: BSD-3-Clause
+
+Core deep learning framework used throughout the project.
+
+--------------------------------------------------------------------------------
+4. FAISS
+--------------------------------------------------------------------------------
+
+Copyright (c) Meta Platforms, Inc. and affiliates.
+Licensed under the MIT License
+
+Source: https://github.com/facebookresearch/faiss
+License: MIT
+
+Used in PRC (Probabilistic Region Collapse) for efficient similarity search.
+
+--------------------------------------------------------------------------------
+5. Gradio
+--------------------------------------------------------------------------------
+
+Copyright (c) 2023 Gradio, Inc.
+Licensed under the Apache License, Version 2.0
+
+Source: https://github.com/gradio-app/gradio
+License: Apache License 2.0
+
+Used for building the interactive demo interface.
+
+================================================================================
+
+For the full list of dependencies and their licenses, please refer to the
+requirements.txt file and the respective project repositories.
+
+================================================================================
+
+ACKNOWLEDGMENTS
+================================================================================
+
+We would like to thank:
+
+- The Qwen Team at Alibaba Cloud for developing and open-sourcing Qwen3
+- The Hugging Face team for the transformers library
+- The PyTorch team for the deep learning framework
+- The FAISS team for efficient similarity search
+- All contributors to the open-source AI/ML ecosystem
+
+================================================================================
+
+For questions about licensing, please open an issue on our GitHub repository:
+https://github.com/bab555/Gravitas-K/issues
+

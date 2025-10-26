@@ -1,27 +1,33 @@
-# Gravitas-K: Cognitive Architecture for Structured Reasoning
+# Gravitas-K
 
-Gravitas-K is an advanced cognitive architecture that enhances large language models with structured reasoning capabilities through the integration of multiple innovative components.
+**Gravitas-K** is a novel cognitive architecture for Large Language Models, combining structured reasoning (KSF's Conceptual Manifold) with dynamic attention mechanisms (Gravitas) built on top of Qwen3-8B.
 
 ## 🌟 Key Features
 
-- **Cognitive Core Block (CCB)**: Replaces traditional FFN layers with A-P-C-V-S (Arbiter-Proposer-Challenger-Verifier-Synthesizer) workflow
-- **Flowing Context (FC)**: Efficient Scan→Focus attention mechanism for long context processing
-- **Probabilistic Region Collapse (PRC)**: Controlled prior injection from concept space
-- **Hierarchical VAE (HVAE)**: Multi-level concept manifold (Directory→Page→Line→Phrase→Word)
-- **Dual-Stream Attention**: Separate anchor (stable) and emergence (creative) information streams
-- **Thinking Mode Integration**: Leverages Qwen3's native `<think>` tags for interpretable reasoning
+### Core Modules
+- **FlowingContext (FC)**: Scan→Focus mechanism for adaptive attention
+- **Cognitive Core Block (CCB)**: A-P-C-V-S workflow (Arbiter, Proposer, Challenger, Verifier, Synthesizer)
+- **Probabilistic Region Collapse (PRC)**: Dynamic knowledge retrieval from conceptual manifold
+- **Hierarchical VAE (HVAE)**: Multi-level knowledge representation (768D→256D→128D→64D→32D)
+- **Dual-Stream Architecture**: Anchor vs Emergence stream processing
+- **Head Vector Transfer**: Cross-layer concept propagation
 
-## 📋 Requirements
-
-- Python 3.10+
-- PyTorch 2.5+ with CUDA 12.8+ (for RTX 5090D support)
-- 32GB+ VRAM
-- Qwen3-8B model weights
+### Special Capabilities
+- **Native Thinking Mode**: Leverages Qwen3's `<think>` tags for interpretable reasoning
+- **Structured Knowledge**: Hierarchical concept storage and retrieval
+- **Noise Robustness**: Trained on augmented data for real-world reliability
+- **Real-time Monitoring**: TensorBoard & W&B integration with detailed metrics
 
 ## 🚀 Quick Start
 
-### Installation
+### Prerequisites
+```bash
+# Python 3.11+
+# CUDA 12.8+ (for RTX 5090D or similar)
+# 32GB+ VRAM recommended
+```
 
+### Installation
 ```bash
 # Clone the repository
 git clone https://github.com/bab555/Gravitas-K.git
@@ -30,136 +36,146 @@ cd Gravitas-K
 # Install dependencies
 pip install -r requirements.txt
 
-# Install in development mode
-pip install -e .
+# (Optional) Install flash-attention for your CUDA version
+# pip install flash-attn --no-build-isolation
 ```
 
-### Model Setup
-
-1. Ensure Qwen3-8B model is available in the parent directory:
+### Download Base Model
+Place Qwen3-8B in a sibling directory:
 ```
-../Qwen3-8B/
-├── config.json
-├── model-*.safetensors
-├── tokenizer.json
-└── ...
+parent_dir/
+├── Qwen3-8B/          # Qwen3 base model
+└── Gravitas-K/        # This repository
 ```
 
-2. Run the demo:
-```python
-from gravitas_k.models.gravitas_k_model import GravitasKModel, GravitasKConfig
-
-# Initialize configuration
-config = GravitasKConfig(
-    base_model_path="../Qwen3-8B",
-    num_modified_layers=8,
-    enable_fc=True,
-    enable_prc=True,
-    enable_hvae=True,
-    load_in_4bit=True,  # For 32GB VRAM
-)
-
-# Load model
-model = GravitasKModel(config)
-
-# Build concept banks for PRC
-model.build_concept_banks()
-
-# Generate with thinking logs
-outputs, think_logs = model.generate_with_think(
-    input_ids,
-    max_new_tokens=1024,
-    temperature=0.6,
-)
-```
-
-## 🏋️ Training
-
-### Stage A: Core Pathway Validation
+### Launch Interactive Demo
 ```bash
+python scripts/quick_start.py demo \
+    --base-model ../Qwen3-8B \
+    --port 7860 \
+    --share  # Optional: create public link
+```
+
+Visit `http://localhost:7860` to interact with the model!
+
+### Start Training
+```bash
+# Stage A: FC + Dual-Stream + CCB (A-P-V)
+python scripts/quick_start.py train \
+    --base-model ../Qwen3-8B \
+    --stage A \
+    --use-wandb \
+    --wandb-project Gravitas-K
+
+# For full training control, use:
 python -m gravitas_k.runtime.train --config gravitas_k/runtime/config.yaml
 ```
 
-### Configuration
-Edit `gravitas_k/runtime/config.yaml` to adjust:
-- Model architecture settings
-- Training hyperparameters
-- Stage-specific configurations
-- Hardware optimization settings
+## 📚 Documentation
 
-## 📊 Evaluation
-
-```bash
-python -m gravitas_k.runtime.eval \
-    --model_path ./checkpoints/gravitas_k_stage_a/best \
-    --eval_data ./data/eval/eval_data.json \
-    --output ./results/eval_results.json
+### Project Structure
 ```
-
-## 🏗️ Architecture
-
-### Module Structure
-```
-gravitas_k/
-├── models/
-│   ├── flowing_context.py    # FC: Scan→Focus mechanism
-│   ├── ccb.py                # Cognitive Core Block (A-P-C-V-S)
-│   ├── prc.py                # Probabilistic Region Collapse
-│   ├── hvae.py               # Hierarchical VAE
-│   └── gravitas_k_model.py  # Main model with Qwen3 surgery
-├── runtime/
-│   ├── train.py              # Training script
-│   ├── eval.py               # Evaluation script
-│   └── config.yaml           # Configuration
-└── tests/                    # Unit tests
+Gravitas-K/
+├── gravitas_k/
+│   ├── models/              # Core model implementations
+│   │   ├── flowing_context.py
+│   │   ├── ccb.py
+│   │   ├── prc.py
+│   │   ├── hvae.py
+│   │   └── gravitas_k_model.py
+│   ├── data/                # Data processing
+│   │   ├── hierarchical_parser.py
+│   │   ├── think_alignment.py
+│   │   └── noise_augmentation.py
+│   ├── runtime/             # Training & evaluation
+│   │   ├── config.yaml
+│   │   ├── train.py
+│   │   └── eval.py
+│   ├── utils/               # Utilities
+│   │   ├── model_loader.py
+│   │   ├── training_monitor.py
+│   │   └── gradio_interface.py
+│   └── tests/               # Unit tests
+├── scripts/
+│   └── quick_start.py       # Quick start scripts
+├── requirements.txt
+└── README.md
 ```
 
 ### Training Stages
 
-1. **Stage A**: FC + Dual-stream + CCB(A-P-V), no Challenger
-2. **Stage B**: Add PRC (limited) and HVAE page-level
-3. **Stage C**: Full A-P-C-V-S with all HVAE levels
-4. **Stage D**: Optimization and fine-tuning
+**Stage A** (Basic Architecture)
+- FlowingContext + Dual-Stream + CCB(A-P-V)
+- Focus: Establishing baseline reasoning workflow
+- Duration: ~10 epochs
+
+**Stage B** (Knowledge Integration)
+- + PRC (limited trigger) + HVAE (page-level)
+- Focus: Hierarchical knowledge retrieval
+- Duration: ~15 epochs
+
+**Stage C** (Full Reasoning)
+- + Challenger + HVAE (full hierarchy)
+- Focus: Deliberative reasoning and multi-level concepts
+- Duration: ~20 epochs
+
+See [GRAVITAS-K_工程实现总指南_Qwen3-8B.md](../GRAVITAS-K_工程实现总指南_Qwen3-8B.md) for comprehensive implementation details.
 
 ## 🧪 Testing
 
+Run unit tests:
 ```bash
-# Run all tests
-pytest gravitas_k/tests/
-
-# Run specific test module
-pytest gravitas_k/tests/test_flowing_context.py -v
+pytest gravitas_k/tests/ -v
 ```
 
-## 📈 Monitoring
+Current test coverage:
+- ✅ FlowingContext: 10/10 tests passing
+- ✅ CognitiveCoreBlock: 11/11 tests passing
 
-Training progress can be monitored via:
-- TensorBoard: `tensorboard --logdir ./logs/tensorboard`
-- Weights & Biases: Configure in `config.yaml`
+## 📊 Monitoring
 
-## 📝 Citation
-
-If you use Gravitas-K in your research, please cite:
-
-```bibtex
-@software{gravitas-k,
-  title = {Gravitas-K: Cognitive Architecture for Structured Reasoning},
-  author = {Gravitas Team},
-  year = {2024},
-  url = {https://github.com/bab555/Gravitas-K}
-}
+### TensorBoard
+```bash
+tensorboard --logdir logs/
 ```
 
-## 📄 License
+### Weights & Biases
+Configure in `gravitas_k/runtime/config.yaml`:
+```yaml
+logging:
+  wandb_project: "Gravitas-K"
+  wandb_run_name: "qwen3-8b-stage-A"
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 🎯 Evaluation Metrics
+
+- **Long-form QA**: Hit@k, MRR, GFR
+- **Noise Robustness**: ΔP@1 under perturbations
+- **Cognitive Efficiency**: Score/FLOPs ratio
+- **Think-Chain Quality**: Explanation coherence, structural consistency
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Please see our development roadmap in [GRAVITAS-K_后续工作计划.md](../GRAVITAS-K_后续工作计划.md).
 
-## 🙏 Acknowledgments
+## 📄 License
 
-- Based on Qwen3-8B model by Alibaba Cloud
-- Inspired by cognitive science and structured reasoning research
-- Built with PyTorch and Hugging Face Transformers
+- Gravitas-K code: MIT License
+- Qwen3-8B base model: Apache 2.0 License
+
+## 🔗 References
+
+- [Qwen3 Paper & Repository](https://github.com/QwenLM/Qwen3)
+- KSF Paper: "Conceptual Manifold and Structural Resonance for Knowledge Integration"
+- Gravitas Paper: "Gravitas: Cognitive Architecture for Structured Reasoning in LLMs"
+
+## 📮 Contact
+
+- GitHub Issues: [https://github.com/bab555/Gravitas-K/issues](https://github.com/bab555/Gravitas-K/issues)
+- Project Maintainer: [@bab555](https://github.com/bab555)
+
+---
+
+**Status**: 🚧 Early Development (TRL-3 Validation Phase)
+
+**Last Updated**: 2025-01-26
