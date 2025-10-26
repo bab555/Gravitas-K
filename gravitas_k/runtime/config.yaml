@@ -1,0 +1,150 @@
+# Gravitas-K Training Configuration
+
+# Model configuration
+model:
+  base_model_path: "../Qwen3-8B"  # Path to Qwen3-8B model
+  num_modified_layers: 8  # Number of layers to replace with CCB
+  enable_fc: true  # Enable Flowing Context
+  enable_prc: true  # Enable Probabilistic Region Collapse
+  enable_hvae: true  # Enable Hierarchical VAE
+  enable_dual_stream: true  # Enable dual-stream attention
+  enable_think_logs: true  # Enable thinking logs
+  fc_num_segments: 4  # Number of segments for Flowing Context
+  prc_k_neighbors: 5  # Number of neighbors for PRC
+  load_in_4bit: true  # Load base model in 4-bit for 32GB VRAM
+
+# HVAE hierarchy levels
+hvae_levels:
+  - ["directory", 768]
+  - ["page", 256]
+  - ["line", 128]
+  - ["phrase", 64]
+  - ["word", 32]
+
+# Training configuration
+training:
+  # Batch size and accumulation
+  micro_batch_size: 1  # For 32GB VRAM
+  gradient_accumulation_steps: 16
+  
+  # Learning rates
+  learning_rate_new: 1e-4  # For new modules (CCB, FC, PRC, HVAE)
+  learning_rate_frozen: 1e-6  # For frozen attention layers
+  learning_rate_ln: 1e-5  # For layer norm fine-tuning
+  
+  # Training schedule
+  warmup_steps: 1000
+  max_steps: 50000
+  eval_steps: 500
+  save_steps: 1000
+  logging_steps: 10
+  
+  # Optimization
+  optimizer: "adamw_8bit"  # 8-bit optimizer for memory efficiency
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  
+  # Precision and efficiency
+  fp16: false
+  bf16: true
+  gradient_checkpointing: true
+  use_flash_attention: true
+  
+  # Context length
+  max_seq_length: 8192  # Start with 8k, can extend to 16k later
+  
+  # Annealing schedules
+  kl_annealing_steps: 10000
+  lambda_annealing_steps: 5000
+  sigma_annealing_steps: 5000
+  
+# Data configuration
+data:
+  train_data_path: "./data/train"
+  eval_data_path: "./data/eval"
+  
+  # Data mix ratios
+  instruction_ratio: 0.3
+  long_context_ratio: 0.2
+  math_code_ratio: 0.2
+  noise_robustness_ratio: 0.1
+  creative_ratio: 0.2
+  
+  # Preprocessing
+  tokenizer_path: "../Qwen3-8B"
+  add_thinking_tags: true
+  max_thinking_length: 2048
+
+# Evaluation configuration
+evaluation:
+  benchmarks:
+    - "long_context_qa"  # Long context question answering
+    - "noise_robustness"  # Robustness to noisy inputs
+    - "creative_generation"  # Creative text generation
+    - "structured_reasoning"  # Math and code reasoning
+  
+  metrics:
+    - "hit_at_k"  # For long context
+    - "em_f1"  # Exact match and F1
+    - "delta_p1_noise"  # Noise robustness
+    - "cognitive_efficiency"  # Score/FLOPs ratio
+    - "thinking_coherence"  # Coherence of thinking logs
+
+# Experiment tracking
+experiment:
+  name: "gravitas_k_stage_a"
+  tags: ["fc", "dual_stream", "ccb_apv"]
+  use_wandb: true
+  wandb_project: "gravitas-k"
+  use_tensorboard: true
+  tb_log_dir: "./logs/tensorboard"
+
+# Stage-specific configurations
+stages:
+  stage_a:
+    # FC + Dual-stream + CCB(A-P-V), no Challenger, no PRC/HVAE
+    enable_challenger: false
+    enable_prc: false
+    enable_hvae: false
+    focus: "core_pathway_validation"
+    
+  stage_b:
+    # Add PRC (limited) and HVAE page-level read-only
+    enable_challenger: false
+    enable_prc: true
+    enable_hvae: true
+    hvae_read_only: true
+    hvae_active_levels: ["page"]
+    prc_trigger_rate: 0.1
+    focus: "memory_integration"
+    
+  stage_c:
+    # Full A-P-C-V-S with all HVAE levels
+    enable_challenger: true
+    enable_prc: true
+    enable_hvae: true
+    hvae_read_only: false
+    hvae_active_levels: ["directory", "page", "line", "phrase", "word"]
+    prc_trigger_rate: 0.3
+    focus: "full_cognitive_cycle"
+    
+  stage_d:
+    # Optimization and fine-tuning
+    focus: "performance_optimization"
+    enable_all: true
+
+# Hardware and environment
+hardware:
+  device: "cuda"
+  cuda_version: "12.8"  # For RTX 5090D
+  num_gpus: 1
+  mixed_precision: "bf16"
+  
+# Monitoring and logging
+monitoring:
+  log_level: "INFO"
+  profile_memory: true
+  track_gradients: true
+  visualize_attention: false  # Set to true for attention visualization
+  save_thinking_samples: true
+  num_thinking_samples: 10
